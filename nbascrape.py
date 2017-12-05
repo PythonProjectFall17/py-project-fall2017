@@ -6,15 +6,16 @@ from lxml import html
 import time
 import urllib.request
 import requests
+import datetime
 
-def printTeams():
+def fileTeams():
+    teams = []
     print("Teams to choose from:\n")
     f = open("teams.txt", 'r')
     for team in f:
         team = team.strip("\n")
-        print(str(team))
-    print("\n")
-    return True
+        teams.append(team)
+    return teams
 
 # scrapes and parses team data
 def getTeams(team1, team2):
@@ -49,7 +50,7 @@ def getTeams(team1, team2):
     print("Previous Games (Splits): " + str(t2[2]))
 
     # calling compareTeams to compare team data and determine winner
-    compareTeams(t1, t2)
+    winner = compareTeams(team1, t1, team2, t2)
 
 def parseTeamData(data, iter, max, index):
     team_stats = []
@@ -181,7 +182,7 @@ def scrapeUrl(url):
     return data_pack
 
 # This is where we will implement algorithm to compare the team's player stats/other stats
-def compareTeams(data1, data2):
+def compareTeams(team1id, data1, team2id, data2):
     """
     REGULAR SEASON INDIVIDUAL PLAYER STATS:
         Location: data[0][index]
@@ -199,7 +200,7 @@ def compareTeams(data1, data2):
             v. Team, GP, MPG, FGM, FGA, FG%, 3PM, 3PA, 3P%, FTM, FTA, FT%, TOV, PF, ORB, DRB, TRB, APG, SPG, BPG, PPG
 
     """
-
+    # All Player Stats
     # Tests
     print("\n")
     print("Roster Player (1): " + str(data1[0][0][1]) + ", Team: " + str(data1[0][0][2]))
@@ -211,15 +212,127 @@ def compareTeams(data1, data2):
     print("Team Stats for " + str(data2[0][0][2]) + ": " + str(data2[1][0]))
     print("Team Splits (one game) for " + str(data2[0][0][2]) + " " + str(data2[2][0]))
 
+
+    print("\nTeam 1: " + str(team1id) + ", Team 2: " + str(team2id))
+    # use team1id and team2id to get teams from depth charts
+    depth_charts = findDepths()
+
+    for team_entry in depth_charts:
+        if team_entry[0] is team1id:
+            team1_rotations = team_entry
+        if team_entry[0] is team2id:
+            team2_rotations = team_entry
+
+    print("Team 1 Starters: " + str(team1_rotations[1]))
+    print("Team 1 Bench/Rotation: " + str(team1_rotations[2]))
+    print("\nTeam 2 Starters: " + str(team2_rotations[1]))
+    print("Team 2 Bench/Rotation: " + str(team2_rotations[2]))
+    """
+        DO WINNER CALCULATIONS HERE
+        USING   team1_rotations, data1
+                team2_rotations, data2
+                
+        RETURN WINNER
+    """
+
     return True
+
+def findDepths():
+    """
+        Function gets list of all starters and bench/rotation players for each team
+        Returned List Format: List[Team Number (Corresponds with Indexes in teams.txt), List of Starters, List of Bench]
+    """
+    url = "https://basketball.realgm.com/nba/depth-charts"
+    f = open("teams.txt", 'r')
+
+    try:
+        # NOTE: Returning 0 for success, 1 for failure
+        session_requests = requests.session()
+        r = session_requests.get(url, headers=dict(referer=url))
+
+        # status code 200 indicates html page access = successful
+        if r.status_code == 200:
+            # tree is the HTML content we are parsing
+            tree = html.fromstring(r.content)
+
+            # get depth chart tables: 2 to 92 (separated by 3 each time)
+            depth_charts = []
+            count = 2
+            i = 2
+            while i < 92:
+                starters = []
+                bench = []
+                players = []
+                # get team name
+                team_name = tree.xpath("//*[@id='site-takeover']/div[3]/div/h2[" + str(count) + "]/text()")
+                f.seek(0)
+                for num, line in enumerate(f):
+                    line = line.strip("\n")
+                    if line in str(team_name[1]):
+                        players.append(num)
+
+                for j in range(2, 7):
+                    try:
+                        row1 = tree.xpath("//*[@id='site-takeover']/div[3]/div/div[" + str(i) + "]/table/tbody/tr[1]/td[" + str(j) + "]/a/text()")
+                        if j is 2:
+                            addpos1 = "PG," + row1[0]
+                        elif j is 3:
+                            addpos1 = "SG," + row1[0]
+                        elif j is 4:
+                            addpos1 = "SF," + row1[0]
+                        elif j is 5:
+                            addpos1 = "PF," + row1[0]
+                        elif j is 6:
+                            addpos1 = "C," + row1[0]
+
+                        starters.append(addpos1)
+                    except Exception as e:
+                        # catch a blank html entry
+                        pass
+                for j in range(2, 7):
+                    try:
+                        row2 = tree.xpath("//*[@id='site-takeover']/div[3]/div/div[" + str(i) + "]/table/tbody/tr[2]/td[" + str(j) + "]/a/text()")
+                        if j is 2:
+                            addpos2 = "PG," + row2[0]
+                        elif j is 3:
+                            addpos2 = "SG," + row2[0]
+                        elif j is 4:
+                            addpos2 = "SF," + row2[0]
+                        elif j is 5:
+                            addpos2 = "PF," + row2[0]
+                        elif j is 6:
+                            addpos2 = "C," + row2[0]
+
+                        bench.append(addpos2)
+                    except Exception as e:
+                        # catch a blank html entry
+                        pass
+
+                players.append(starters)
+                players.append(bench)
+                #  actual team name
+                #depth_charts.append(team_name[1])
+                depth_charts.append(players)
+                i = i + 3
+                count = count + 1
+
+    except Exception as e:
+        print("Error: ", e)
+        return 1
+
+    # returns
+    return depth_charts
 
 if __name__ == "__main__":
 
     # all valid teams located in teams.txt
     # call prints all to screen for testing purposes
-    printTeams()
+    teams = fileTeams()
 
-    print("Please enter two teams #s to determine a winner:")
+    for index, team in enumerate(teams):
+        print(str(index) + ". " + str(team))
+
+    print("\nPlease enter two teams #s to determine a winner: (testing)")
     print("\n")
 
     # ideally this would be done via a drop down/method on gui
@@ -229,3 +342,8 @@ if __name__ == "__main__":
 
     # team1 & team2 are indexed in urls with corresponding team in urls.txt
     getTeams(team1, team2)
+
+
+
+
+
