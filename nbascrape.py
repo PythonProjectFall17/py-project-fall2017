@@ -235,6 +235,198 @@ def compareTeams(team1id, data1, team2id, data2):
         RETURN WINNER
     """
 
+    # TEAM 1 STATS
+
+    # STARTERS
+    T1_S_PPG = data1[1][1][20]
+    T1_S_FG = data1[1][1][5]
+    T1_S_FT = data1[1][1][11]
+    T1_S_3PM = data1[1][1][6]
+    T1_S_AST = data1[1][1][17]
+    T1_S_DRB = data1[1][1][15]
+    T1_S_ORB = data1[1][1][14]
+    T1_S_STL = data1[1][1][18]
+    T1_S_BLK = data1[1][1][19]
+    T1_S_TOV = data1[1][1][12]
+
+    # BENCH
+    T1_B_PPG = data1[1][2][20]
+    T1_B_FG = data1[1][2][5]
+    T1_B_FT = data1[1][2][11]
+    T1_B_3PM = data1[1][2][6]
+    T1_B_AST = data1[1][2][17]
+    T1_B_DRB = data1[1][2][15]
+    T1_B_ORB = data1[1][2][14]
+    T1_B_STL = data1[1][2][18]
+    T1_B_BLK = data1[1][2][19]
+    T1_B_TOV = data1[1][2][12]
+
+    # T1P1 = team 1, player 1
+    T1P1_PPG = data1[0][0][22]
+    T1P1_FG = data1[0][0][7]
+    T1P1_FT = data1[0][0][13]
+    T1P1_3PM = data1[0][0][8]
+    T1P1_AST = data1[0][0][19]
+    T1P1_REB = data1[0][0][18]
+    T1P1_STL = data1[0][0][20]
+    T1P1_BLK = data1[0][0][21]
+
+    # TEAM 2 STATS
+
+    # STARTERS
+    T2_S_PPG = data2[1][1][20]
+    T2_S_FG = data2[1][1][5]
+    T2_S_FT = data2[1][1][11]
+    T2_S_3PM = data2[1][1][6]
+    T2_S_AST = data2[1][1][17]
+    T2_S_DRB = data2[1][1][15]
+    T2_S_ORB = data2[1][1][14]
+    T2_S_STL = data2[1][1][18]
+    T2_S_BLK = data2[1][1][19]
+    T2_S_TOV = data2[1][1][12]
+
+    # BENCH
+    T2_B_PPG = data1[1][2][20]
+    T2_B_FG = data1[1][2][5]
+    T2_B_FT = data1[1][2][11]
+    T2_B_3PM = data1[1][2][6]
+    T2_B_AST = data1[1][2][17]
+    T2_B_DRB = data1[1][2][15]
+    T2_B_ORB = data1[1][2][14]
+    T2_B_STL = data1[1][2][18]
+    T2_B_BLK = data1[1][2][19]
+    T2_B_TOV = data1[1][2][12]
+
+    # T2P1 = team 2, player 1
+    T2P1_PPG = data2[0][0][22]
+    T2P1_FG = data2[0][0][7]
+    T2P1_FT = data2[0][0][13]
+    T2P1_3PM = data2[0][0][8]
+    T2P1_AST = data2[0][0][19]
+    T2P1_REB = data2[0][0][18]
+    T2P1_STL = data2[0][0][20]
+    T2P1_BLK = data2[0][0][21]
+
+    # calculate winner via a 'points' system,
+    # whoever leads in each attribute gets a point
+
+    # TEAM COMPARISON
+
+    # STARTERS
+
+    t1_s_points = 0  # starters points
+    t2_s_points = 0
+
+    if T1_S_PPG > T2_S_PPG:  # points per game
+        t1_s_points += 1
+    elif T2_S_PPG > T1_S_PPG:
+        t2_s_points += 1
+    if T1_S_FG > T2_S_FG:  # field goal percentage
+        t1_s_points += 1
+    elif T2_S_FG > T1_S_FG:
+        t2_s_points += 1
+    if T1_S_FT > T2_S_FT:  # free throw percentage
+        t1_s_points += 1
+    elif T2_S_FT > T1_S_FT:
+        t2_s_points += 1
+    if T1_S_3PM > T2_S_3PM:  # 3 pointers made
+        t1_s_points += 1
+    elif T2_S_3PM > T1_S_3PM:
+        t2_s_points += 1
+    if T1_S_AST > T2_S_AST:  # assists per game
+        t1_s_points += 1
+    elif T2_S_AST > T1_S_AST:
+        t2_s_points += 1
+    if T1_S_DRB > T2_S_DRB:  # defensive rebounds
+        t1_s_points += 1
+    elif T2_S_DRB > T1_S_DRB:
+        t2_s_points += 1
+    if T1_S_ORB > T2_S_ORB:  # offensive rebounds
+        t1_s_points += 1
+    elif T2_S_ORB > T1_S_ORB:
+        t2_s_points += 1
+    if T1_S_STL > T2_S_STL:  # steals per game
+        t1_s_points += 1
+    elif T2_S_STL > T1_S_STL:
+        t2_s_points += 1
+    if T1_S_BLK > T2_S_BLK:  # blocks per game
+        t1_s_points += 1
+    elif T2_S_BLK > T1_S_BLK:
+        t2_s_points += 1
+    if T1_S_TOV > T2_S_TOV:  # turnovers per game
+        t2_s_points += 1  # team gets a point if they have LESS turnovers
+    elif T2_S_TOV > T1_S_TOV:
+        t1_s_points += 1
+
+    # BENCH COMPARISON
+
+    t1_b_points = 0  # bench points
+    t2_b_points = 0
+
+    if T1_B_PPG > T2_B_PPG:  # points per game
+        t1_b_points += 1
+    elif T2_B_PPG > T1_B_PPG:
+        t2_b_points += 1
+    if T1_B_FG > T2_B_FG:  # field goal percentage
+        t1_b_points += 1
+    elif T2_B_FG > T1_B_FG:
+        t2_b_points += 1
+    if T1_B_FT > T2_B_FT:  # free throw percentage
+        t1_b_points += 1
+    elif T2_B_FT > T1_B_FT:
+        t2_b_points += 1
+    if T1_B_3PM > T2_B_3PM:  # 3 pointers made
+        t1_b_points += 1
+    elif T2_B_3PM > T1_B_3PM:
+        t2_b_points += 1
+    if T1_B_AST > T2_B_AST:  # assists per game
+        t1_b_points += 1
+    elif T2_B_AST > T1_B_AST:
+        t2_b_points += 1
+    if T1_B_DRB > T2_B_DRB:  # defensive rebounds
+        t1_b_points += 1
+    elif T2_B_DRB > T1_B_DRB:
+        t2_b_points += 1
+    if T1_B_ORB > T2_B_ORB:  # offensive rebounds
+        t1_b_points += 1
+    elif T2_B_ORB > T1_B_ORB:
+        t2_b_points += 1
+    if T1_B_STL > T2_B_STL:  # steals per game
+        t1_b_points += 1
+    elif T2_B_STL > T1_B_STL:
+        t2_b_points += 1
+    if T1_B_BLK > T2_B_BLK:  # blocks per game
+        t1_b_points += 1
+    elif T2_B_BLK > T1_B_BLK:
+        t2_b_points += 1
+    if T1_B_TOV > T2_B_TOV:  # turnovers per game
+        t2_b_points += 1  # team gets a point if they have LESS turnovers
+    elif T2_B_TOV > T1_B_TOV:
+        t1_b_points += 1
+
+    # weighted 50% for team stats (20% bench, 30% starters)
+    # TODO: adjust the point totals based on weight
+
+    t1_totalpoints = (0.2 * t1_b_points) + (0.3 * t1_s_points)
+    t2_totalpoints = (0.2 * t2_b_points) + (0.3 * t2_s_points)
+
+    # weighted 50% for individual player matchups
+
+    # INDIVIDUAL MATCHUPS COMPARISON
+
+    # output/return results with team names and rounded percentage
+    # ( not like this lol but its a start )
+
+    if t1_totalpoints > t2_totalpoints:
+        advantage = ((t1_totalpoints - t2_totalpoints) / 10) * 100
+        # calculate some sort of percentage advantage to beat other team
+        print("\nTeam 1 has a ", advantage, "% advantage to beat Team 2!")
+    elif t2_totalpoints > t1_totalpoints:
+        advantage = ((t2_totalpoints - t1_totalpoints) / 10) * 100
+        print("\nTeam 2 has a ", advantage, "% advantage to beat Team 1!")
+    elif t1_totalpoints == t2_totalpoints:
+        print("\nNeither team has a distinct advantage. What a perfect matchup!")
+
     return True
 
 def findDepths():
@@ -342,8 +534,3 @@ if __name__ == "__main__":
 
     # team1 & team2 are indexed in urls with corresponding team in urls.txt
     getTeams(team1, team2)
-
-
-
-
-
