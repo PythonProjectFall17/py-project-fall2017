@@ -216,6 +216,8 @@ def compareTeams(team1id, data1, team2id, data2):
     print("\nTeam 1: " + str(team1id) + ", Team 2: " + str(team2id))
     # use team1id and team2id to get teams from depth charts
     depth_charts = findDepths()
+    team1_rotations = ""
+    team2_rotations = ""
 
     for team_entry in depth_charts:
         if team_entry[0] is team1id:
@@ -413,6 +415,159 @@ def compareTeams(team1id, data1, team2id, data2):
     # weighted 50% for individual player matchups
 
     # INDIVIDUAL MATCHUPS COMPARISON
+    total_minutes = "48"
+
+
+    # COMPARE POINT GUARDS
+    S_PG_T1 = ""
+    S_PG_T1_stats = []
+    S_PG_T2 = ""
+    S_PG_T2_stats = []
+    S_SG_T1 = ""
+    S_SG_T1_stats = []
+    S_SG_T2 = ""
+    S_SG_T2_stats = []
+    S_SF_T1 = ""
+    S_SF_T1_stats = []
+    S_SF_T2 = ""
+    S_SF_T2_stats = []
+    S_PF_T1 = ""
+    S_PF_T1_stats = []
+    S_PF_T2 = ""
+    S_PF_T2_stats = []
+    S_C_T1 = ""
+    S_C_T1_stats = []
+    S_C_T2 = ""
+    S_C_T2_stats = []
+
+    print("GATHERING STARTER PLAYERS DATA FOR BOTH TEAMS...")
+    print(team1_rotations)
+    for player in team1_rotations[1]:
+        if "PG" in player:
+            parse = player.split(" ")
+            S_PG_T1 = parse[1]
+            print(S_PG_T1)
+        if "SG" in player:
+            parse = player.split(" ")
+            S_SG_T1 = parse[1]
+            print(S_SG_T1)
+        if "SF" in player:
+            parse = player.split(" ")
+            S_SF_T1 = parse[1]
+            print(S_SF_T1)
+        if "PF" in player:
+            parse = player.split(" ")
+            S_PF_T1 = parse[1]
+            print(S_PF_T1)
+        if "C" in player:
+            parse = player.split(" ")
+            S_C_T1 = parse[1]
+            print(S_C_T1)
+
+    for index, player in enumerate(data1[0]):
+        if S_PG_T1 in player[1]:
+            S_PG_T1_stats = data1[0][index]
+        if S_SG_T1 in player[1]:
+            S_SG_T1_stats = data1[0][index]
+        if S_SF_T1 in player[1]:
+            S_SF_T1_stats = data1[0][index]
+        if S_PF_T1 in player[1]:
+            S_PF_T1_stats = data1[0][index]
+        if S_C_T1 in player[1]:
+            S_C_T1_stats = data1[0][index]
+
+    print(str(S_PG_T1_stats))
+    print(str(S_SG_T1_stats))
+    print(str(S_SF_T1_stats))
+    print(str(S_PF_T1_stats))
+    print(str(S_C_T1_stats))
+
+    print(team2_rotations)
+    for player in team2_rotations[1]:
+        if "PG" in player:
+            parse = player.split(" ")
+            S_PG_T2 = parse[1]
+            print(S_PG_T2)
+        if "SG" in player:
+            parse = player.split(" ")
+            S_SG_T2 = parse[1]
+            print(S_SG_T2)
+        if "SF" in player:
+            parse = player.split(" ")
+            S_SF_T2 = parse[1]
+            print(S_SF_T2)
+        if "PF" in player:
+            parse = player.split(" ")
+            S_PF_T2 = parse[1]
+            print(S_PF_T2)
+        if "C" in player:
+            parse = player.split(" ")
+            S_C_T2 = parse[1]
+            print(S_C_T2)
+
+    for index, player in enumerate(data2[0]):
+        if S_PG_T2 in player[1]:
+            S_PG_T2_stats = data2[0][index]
+        if S_SG_T2 in player[1]:
+            S_SG_T2_stats = data2[0][index]
+        if S_SF_T2 in player[1]:
+            S_SF_T2_stats = data2[0][index]
+        if S_PF_T2 in player[1]:
+            S_PF_T2_stats = data2[0][index]
+        if S_C_T2 in player[1]:
+            S_C_T2_stats = data2[0][index]
+
+    print(str(S_PG_T2_stats))
+    print(str(S_SG_T2_stats))
+    print(str(S_SF_T2_stats))
+    print(str(S_PF_T2_stats))
+    print(str(S_C_T2_stats))
+
+    """
+        COMPARE STARTING POINT GUARDS FOR BOTH TEAMS HERE
+    """
+    print("\nComparing Starting Point Guards: " + S_PG_T1_stats[2] + ": " + S_PG_T1_stats[1] + " vs. " + S_PG_T2_stats[2] + ": " + S_PG_T2_stats[1])
+    # compare ppg, etc.
+    PPG_S_PG_T1 = S_PG_T1_stats[22]
+    PPG_S_PG_T2 = S_PG_T2_stats[22]
+
+    """
+        COMPARE STARTING SHOOTING GUARDS FOR BOTH TEAMS HERE
+    """
+    print("\nComparing Starting Shooting Guards: " + S_SG_T1_stats[2] + ": " + S_SG_T1_stats[1] + " vs. " + S_SG_T2_stats[2] + ": " + S_SG_T2_stats[1])
+    # compare ppg, etc.
+    PPG_S_SG_T1 = S_SG_T1_stats[22]
+    PPG_S_SG_T2 = S_SG_T2_stats[22]
+
+    """
+        COMPARE STARTING SMALL FORWARDS FOR BOTH TEAMS HERE
+    """
+    print("\nComparing Starting Small Forwards: " + S_SF_T1_stats[2] + ": " + S_SF_T1_stats[1] + " vs. " + S_SF_T2_stats[2] + ": " + S_SF_T2_stats[1])
+    # compare ppg, etc.
+    PPG_S_SF_T1 = S_SF_T1_stats[22]
+    PPG_S_SF_T2 = S_SF_T2_stats[22]
+
+    """
+        COMPARE STARTING POWER FORWARDS FOR BOTH TEAMS HERE
+    """
+    print("\nComparing Starting Power Forwards: " + S_PF_T1_stats[2] + ": " + S_PF_T1_stats[1] + " vs. " + S_PF_T2_stats[2] + ": " + S_PF_T2_stats[1])
+    # compare ppg, etc.
+    PPG_S_PF_T1 = S_PF_T1_stats[22]
+    PPG_S_PF_T2 = S_PF_T2_stats[22]
+
+    """
+        COMPARE STARTING CENTERS FOR BOTH TEAMS HERE
+    """
+    print("\nComparing Starting Centers: " + S_C_T1_stats[2] + ": " + S_C_T1_stats[1] + " vs. " + S_C_T2_stats[2] + ": " + S_C_T2_stats[1])
+    # compare ppg, etc.
+    PPG_S_C_T1 = S_C_T1_stats[22]
+    PPG_S_C_T2 = S_C_T2_stats[22]
+
+    """
+        If we want to compare one thing from bench we could average points off bench and apply that
+        
+    """
+
 
     # output/return results with team names and rounded percentage
     # ( not like this lol but its a start )
