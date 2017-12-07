@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>NBA Game Advantage Predictor</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="static/bootstrap.min.css" rel="stylesheet" media="screen">
+  </head>
+  <style>
+  body {
+    background-image: url("static/NBA.jpg");
+    background-repeat: no-repeat;
+    background-size: cover;
+  }
+  </style>
+
+    <div class="container">
+      <h1 style="color:white;" align="center">NBA Game Predictor</h1>
+      <br>
+
+<p align="center">
+
+      <p>
+
+      {% for message in get_flashed_messages() %}
+        {{ message }}
+      {% endfor %}
+
+    <p align="center" style="color:black;">
+    	<b>Select two teams to generate a prediciton:</b>
+    </p>
+
+    <p align="center" style="color:black;">
+        {% for i in players %} 
+          	{{ i }}
+        {% endfor %}
+     </p>
+
+      <form align="center"action="" method="post" id="predict">
+        Enter Team 1 ID:<br> <input type="text" placeholder="Team ID 1" name="team1_vs" value="{{request.form.team1_vs}}"><br><br>
+        Enter Team 2 ID:<br> <input type="text" placeholder="Team ID 2" name="team2_vs" value="{{request.form.team2_vs}}"><br><br>
+    
+      <p> <b>Results: </b></p>
+      <!--<ul style="list-style: none;">-->
+      <p style="color:black;">
+      {% set count = 0 %}
+        {% for i in some_output %} 
+          	<strong>{{ i }}</strong>
+          {% set count = count+1 %}
+          {% if count > 5 %}
+          	<br>
+          	{% set count = 0 %}
+          {% endif %}
+        {% endfor %}
+     </p>
+      <!--</ul>-->
+
+      <p style="color:white;">
+      {% set count = 0 %}
+        {% for i in win_team %} 
+            <strong>{{ i }}</strong>
+        {% endfor %}
+     </p>
+
+      <p style="color:white;">
+      {% set count = 0 %}
+        {% for i in pct_adv %} 
+            <strong>{{ i }}</strong>
+        {% endfor %}
+     </p>
+
+      <p style="color:white;">
+      {% set count = 0 %}
+        {% for i in lose_team %} 
+            <strong>{{ i }}</strong>
+        {% endfor %}
+     </p>
+
+       	<button type="submit" form="predict" value="Predict">Get Advantage</button>
+      </form>
+
+      {% if error %}
+        <p class="error"><strong>Error:</strong> {{ error }}
+      {% endif %}
+
+      <br>
+
+    <p align="center" style="color:white;">
+
+        {% for i in team_comparison %} 
+          	{{ i }} <br>
+        {% endfor %}
+     </p>
+
+     <br><br>
+
+    </div>
+  </body>
+</html>

@@ -1,0 +1,8 @@
+HOW-TO RUN WITH FLASK INTEGRATION
+- install flask if not already installed: pip3 install flask
+- run the following on command line to connect the application
+-- export FLASK_APP=app.py
+-- flask run
+
+The program should now be active on local host:
+http://127.0.0.1:5000/nba-adv-predictor
