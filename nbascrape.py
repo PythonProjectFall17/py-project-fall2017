@@ -3,6 +3,7 @@
 # initial
 
 from lxml import html
+from random import randint
 import time
 import urllib.request
 import requests
@@ -181,6 +182,7 @@ def scrapeUrl(url):
 
     return data_pack
 
+
 # This is where we will implement algorithm to compare the team's player stats/other stats
 def compareTeams(team1id, data1, team2id, data2):
     """
@@ -200,19 +202,6 @@ def compareTeams(team1id, data1, team2id, data2):
             v. Team, GP, MPG, FGM, FGA, FG%, 3PM, 3PA, 3P%, FTM, FTA, FT%, TOV, PF, ORB, DRB, TRB, APG, SPG, BPG, PPG
 
     """
-    # All Player Stats
-    # Tests
-    print("\n")
-    print("Roster Player (1): " + str(data1[0][0][1]) + ", Team: " + str(data1[0][0][2]))
-    print("Team Stats for " + str(data1[0][0][2]) + ": " + str(data1[1][0]))
-    print("Team Splits (one game) for " + str(data1[0][0][2]) + " " + str(data1[2][0]))
-
-    print("\n")
-    print("Roster Player(1): " + str(data2[0][0][1]) + ", Team: " + str(data2[0][0][2]))
-    print("Team Stats for " + str(data2[0][0][2]) + ": " + str(data2[1][0]))
-    print("Team Splits (one game) for " + str(data2[0][0][2]) + " " + str(data2[2][0]))
-
-
     print("\nTeam 1: " + str(team1id) + ", Team 2: " + str(team2id))
     # use team1id and team2id to get teams from depth charts
     depth_charts = findDepths()
@@ -233,7 +222,7 @@ def compareTeams(team1id, data1, team2id, data2):
         DO WINNER CALCULATIONS HERE
         USING   team1_rotations, data1
                 team2_rotations, data2
-                
+
         RETURN WINNER
     """
 
@@ -263,16 +252,6 @@ def compareTeams(team1id, data1, team2id, data2):
     T1_B_BLK = data1[1][2][19]
     T1_B_TOV = data1[1][2][12]
 
-    # T1P1 = team 1, player 1
-    T1P1_PPG = data1[0][0][22]
-    T1P1_FG = data1[0][0][7]
-    T1P1_FT = data1[0][0][13]
-    T1P1_3PM = data1[0][0][8]
-    T1P1_AST = data1[0][0][19]
-    T1P1_REB = data1[0][0][18]
-    T1P1_STL = data1[0][0][20]
-    T1P1_BLK = data1[0][0][21]
-
     # TEAM 2 STATS
 
     # STARTERS
@@ -288,31 +267,21 @@ def compareTeams(team1id, data1, team2id, data2):
     T2_S_TOV = data2[1][1][12]
 
     # BENCH
-    T2_B_PPG = data1[1][2][20]
-    T2_B_FG = data1[1][2][5]
-    T2_B_FT = data1[1][2][11]
-    T2_B_3PM = data1[1][2][6]
-    T2_B_AST = data1[1][2][17]
-    T2_B_DRB = data1[1][2][15]
-    T2_B_ORB = data1[1][2][14]
-    T2_B_STL = data1[1][2][18]
-    T2_B_BLK = data1[1][2][19]
-    T2_B_TOV = data1[1][2][12]
-
-    # T2P1 = team 2, player 1
-    T2P1_PPG = data2[0][0][22]
-    T2P1_FG = data2[0][0][7]
-    T2P1_FT = data2[0][0][13]
-    T2P1_3PM = data2[0][0][8]
-    T2P1_AST = data2[0][0][19]
-    T2P1_REB = data2[0][0][18]
-    T2P1_STL = data2[0][0][20]
-    T2P1_BLK = data2[0][0][21]
+    T2_B_PPG = data2[1][2][20]
+    T2_B_FG = data2[1][2][5]
+    T2_B_FT = data2[1][2][11]
+    T2_B_3PM = data2[1][2][6]
+    T2_B_AST = data2[1][2][17]
+    T2_B_DRB = data2[1][2][15]
+    T2_B_ORB = data2[1][2][14]
+    T2_B_STL = data2[1][2][18]
+    T2_B_BLK = data2[1][2][19]
+    T2_B_TOV = data2[1][2][12]
 
     # calculate winner via a 'points' system,
     # whoever leads in each attribute gets a point
 
-    # TEAM COMPARISON
+    # BEGIN TEAM COMPARISON
 
     # STARTERS
 
@@ -360,7 +329,7 @@ def compareTeams(team1id, data1, team2id, data2):
     elif T2_S_TOV > T1_S_TOV:
         t1_s_points += 1
 
-    # BENCH COMPARISON
+    # BENCH
 
     t1_b_points = 0  # bench points
     t2_b_points = 0
@@ -406,19 +375,20 @@ def compareTeams(team1id, data1, team2id, data2):
     elif T2_B_TOV > T1_B_TOV:
         t1_b_points += 1
 
-    # weighted 50% for team stats (20% bench, 30% starters)
-    # TODO: adjust the point totals based on weight
+    # BEGIN INDIVIDUAL MATCHUPS COMPARISON
 
-    t1_totalpoints = (0.2 * t1_b_points) + (0.3 * t1_s_points)
-    t2_totalpoints = (0.2 * t2_b_points) + (0.3 * t2_s_points)
+    """
+     Note:
+     Some players will get 3 points if they lead the other player in their primary stat.
+     For example, the leading point guard will get 3 points for having more assists.
+     Centers will get 3 points for having more rebounds, etc.
+     Some players will get 2 points for various stats that are deemed important for the position (PPG for SG, etc).
+     And finally, for all other stats that hold less value, 1 point.
+      """
 
-    # weighted 50% for individual player matchups
+    t1_playerpoints = 0
+    t2_playerpoints = 0
 
-    # INDIVIDUAL MATCHUPS COMPARISON
-    total_minutes = "48"
-
-
-    # COMPARE POINT GUARDS
     S_PG_T1 = ""
     S_PG_T1_stats = []
     S_PG_T2 = ""
@@ -482,7 +452,6 @@ def compareTeams(team1id, data1, team2id, data2):
     print(str(S_PF_T1_stats))
     print(str(S_C_T1_stats))
 
-    print(team2_rotations)
     for player in team2_rotations[1]:
         if "PG" in player:
             parse = player.split(" ")
@@ -517,68 +486,353 @@ def compareTeams(team1id, data1, team2id, data2):
         if S_C_T2 in player[1]:
             S_C_T2_stats = data2[0][index]
 
-    print(str(S_PG_T2_stats))
-    print(str(S_SG_T2_stats))
-    print(str(S_SF_T2_stats))
-    print(str(S_PF_T2_stats))
-    print(str(S_C_T2_stats))
-
     """
         COMPARE STARTING POINT GUARDS FOR BOTH TEAMS HERE
     """
-    print("\nComparing Starting Point Guards: " + S_PG_T1_stats[2] + ": " + S_PG_T1_stats[1] + " vs. " + S_PG_T2_stats[2] + ": " + S_PG_T2_stats[1])
-    # compare ppg, etc.
+    print("\nComparing Starting Point Guards: " + S_PG_T1_stats[2] + ": " + S_PG_T1_stats[1] + " vs. " + S_PG_T2_stats[
+        2] + ": " + S_PG_T2_stats[1])
+
+    print()
+
+    # Team 1 starting PG stats
     PPG_S_PG_T1 = S_PG_T1_stats[22]
+    FG_S_PG_T1 = S_PG_T1_stats[7]
+    FT_S_PG_T1 = S_PG_T1_stats[13]
+    PM3_S_PG_T1 = S_PG_T1_stats[8]  # PM3 means 3PM cuz python doesn't like when you start a variable name with int :-)
+    AST_S_PG_T1 = S_PG_T1_stats[19]
+    REB_S_PG_T1 = S_PG_T1_stats[18]
+    STL_S_PG_T1 = S_PG_T1_stats[20]
+    BLK_S_PG_T1 = S_PG_T1_stats[21]
+
+    # Team 2 starting PG stats
     PPG_S_PG_T2 = S_PG_T2_stats[22]
+    FG_S_PG_T2 = S_PG_T2_stats[7]
+    FT_S_PG_T2 = S_PG_T2_stats[13]
+    PM3_S_PG_T2 = S_PG_T2_stats[8]  # PM3 means 3PM cuz python doesn't like when you start a variable name with int :-)
+    AST_S_PG_T2 = S_PG_T2_stats[19]
+    REB_S_PG_T2 = S_PG_T2_stats[18]
+    STL_S_PG_T2 = S_PG_T2_stats[20]
+    BLK_S_PG_T2 = S_PG_T2_stats[21]
+
+    if PPG_S_PG_T1 > PPG_S_PG_T2:
+        t1_playerpoints += 2
+    elif PPG_S_PG_T2 > PPG_S_PG_T1:
+        t2_playerpoints += 2
+    if FG_S_PG_T1 > FG_S_PG_T2:
+        t1_playerpoints += 1
+    elif FG_S_PG_T2 > FG_S_PG_T1:
+        t2_playerpoints += 1
+    if FT_S_PG_T1 > FT_S_PG_T2:
+        t1_playerpoints += 2
+    elif FT_S_PG_T2 > FT_S_PG_T1:
+        t2_playerpoints += 2
+    if PM3_S_PG_T1 > PM3_S_PG_T2:
+        t1_playerpoints += 2
+    elif PM3_S_PG_T2 > PM3_S_PG_T1:
+        t2_playerpoints += 2
+    if AST_S_PG_T1 > AST_S_PG_T2:
+        t1_playerpoints += 2    # 3
+    elif AST_S_PG_T2 > AST_S_PG_T1:
+        t2_playerpoints += 2    # 3
+    if REB_S_PG_T1 > REB_S_PG_T2:
+        t1_playerpoints += 1
+    elif REB_S_PG_T2 > REB_S_PG_T1:
+        t2_playerpoints += 1
+    if STL_S_PG_T1 > STL_S_PG_T2:
+        t1_playerpoints += 1
+    elif STL_S_PG_T2 > STL_S_PG_T1:
+        t2_playerpoints += 1
+    if BLK_S_PG_T1 > BLK_S_PG_T2:
+        t1_playerpoints += 1
+    elif BLK_S_PG_T2 > BLK_S_PG_T1:
+        t2_playerpoints += 1
+
+    print("PG")
+    print(t1_playerpoints)
+    print(t2_playerpoints)
 
     """
         COMPARE STARTING SHOOTING GUARDS FOR BOTH TEAMS HERE
     """
-    print("\nComparing Starting Shooting Guards: " + S_SG_T1_stats[2] + ": " + S_SG_T1_stats[1] + " vs. " + S_SG_T2_stats[2] + ": " + S_SG_T2_stats[1])
-    # compare ppg, etc.
+    print(
+        "\nComparing Starting Shooting Guards: " + S_SG_T1_stats[2] + ": " + S_SG_T1_stats[1] + " vs. " + S_SG_T2_stats[
+            2] + ": " + S_SG_T2_stats[1])
+
+    # Team 1 starting SG stats
     PPG_S_SG_T1 = S_SG_T1_stats[22]
+    FG_S_SG_T1 = S_SG_T1_stats[7]
+    FT_S_SG_T1 = S_SG_T1_stats[13]
+    PM3_S_SG_T1 = S_SG_T1_stats[8]  # PM3 means 3PM cuz python doesn't like when you start a variable name with int :-)
+    AST_S_SG_T1 = S_SG_T1_stats[19]
+    REB_S_SG_T1 = S_SG_T1_stats[18]
+    STL_S_SG_T1 = S_SG_T1_stats[20]
+    BLK_S_SG_T1 = S_SG_T1_stats[21]
+
+    # Team 2 starting SG stats
     PPG_S_SG_T2 = S_SG_T2_stats[22]
+    FG_S_SG_T2 = S_SG_T2_stats[7]
+    FT_S_SG_T2 = S_SG_T2_stats[13]
+    PM3_S_SG_T2 = S_SG_T2_stats[8]  # PM3 means 3PM cuz python doesn't like when you start a variable name with int :-)
+    AST_S_SG_T2 = S_SG_T2_stats[19]
+    REB_S_SG_T2 = S_SG_T2_stats[18]
+    STL_S_SG_T2 = S_SG_T2_stats[20]
+    BLK_S_SG_T2 = S_SG_T2_stats[21]
+
+    if PPG_S_SG_T1 > PPG_S_SG_T2:
+        t1_playerpoints += 2    # 3
+    elif PPG_S_SG_T2 > PPG_S_SG_T1:
+        t2_playerpoints += 2    # 3
+    if FG_S_SG_T1 > FG_S_SG_T2:
+        t1_playerpoints += 1
+    elif FG_S_SG_T2 > FG_S_SG_T1:
+        t2_playerpoints += 1
+    if FT_S_SG_T1 > FT_S_SG_T2:
+        t1_playerpoints += 1
+    elif FT_S_SG_T2 > FT_S_SG_T1:
+        t2_playerpoints += 1
+    if PM3_S_SG_T1 > PM3_S_SG_T2:
+        t1_playerpoints += 2
+    elif PM3_S_SG_T2 > PM3_S_SG_T1:
+        t2_playerpoints += 2
+    if AST_S_SG_T1 > AST_S_SG_T2:
+        t1_playerpoints += 1
+    elif AST_S_SG_T2 > AST_S_SG_T1:
+        t2_playerpoints += 1
+    if REB_S_SG_T1 > REB_S_SG_T2:
+        t1_playerpoints += 1
+    elif REB_S_SG_T2 > REB_S_SG_T1:
+        t2_playerpoints += 1
+    if STL_S_SG_T1 > STL_S_SG_T2:
+        t1_playerpoints += 1
+    elif STL_S_SG_T2 > STL_S_SG_T1:
+        t2_playerpoints += 1
+    if BLK_S_SG_T1 > BLK_S_SG_T2:
+        t1_playerpoints += 1
+    elif BLK_S_SG_T2 > BLK_S_SG_T1:
+        t2_playerpoints += 1
+
+    print("SG")
+    print(t1_playerpoints)
+    print(t2_playerpoints)
 
     """
         COMPARE STARTING SMALL FORWARDS FOR BOTH TEAMS HERE
     """
-    print("\nComparing Starting Small Forwards: " + S_SF_T1_stats[2] + ": " + S_SF_T1_stats[1] + " vs. " + S_SF_T2_stats[2] + ": " + S_SF_T2_stats[1])
-    # compare ppg, etc.
+    print(
+        "\nComparing Starting Small Forwards: " + S_SF_T1_stats[2] + ": " + S_SF_T1_stats[1] + " vs. " + S_SF_T2_stats[
+            2] + ": " + S_SF_T2_stats[1])
+
+    # Team 1 starting SF stats
     PPG_S_SF_T1 = S_SF_T1_stats[22]
+    FG_S_SF_T1 = S_SF_T1_stats[7]
+    FT_S_SF_T1 = S_SF_T1_stats[13]
+    PM3_S_SF_T1 = S_SF_T1_stats[8]  # PM3 means 3PM cuz python doesn't like when you start a variable name with int :-)
+    AST_S_SF_T1 = S_SF_T1_stats[19]
+    REB_S_SF_T1 = S_SF_T1_stats[18]
+    STL_S_SF_T1 = S_SF_T1_stats[20]
+    BLK_S_SF_T1 = S_SF_T1_stats[21]
+
+    # Team 2 starting SF stats
     PPG_S_SF_T2 = S_SF_T2_stats[22]
+    FG_S_SF_T2 = S_SF_T2_stats[7]
+    FT_S_SF_T2 = S_SF_T2_stats[13]
+    PM3_S_SF_T2 = S_SF_T2_stats[8]  # PM3 means 3PM cuz python doesn't like when you start a variable name with int :-)
+    AST_S_SF_T2 = S_SF_T2_stats[19]
+    REB_S_SF_T2 = S_SF_T2_stats[18]
+    STL_S_SF_T2 = S_SF_T2_stats[20]
+    BLK_S_SF_T2 = S_SF_T2_stats[21]
+
+    if PPG_S_SF_T1 > PPG_S_SF_T2:
+        t1_playerpoints += 2    # changed 2
+    elif PPG_S_SF_T2 > PPG_S_SF_T1:
+        t2_playerpoints += 2    # changed 2
+    if FG_S_SF_T1 > FG_S_SF_T2:
+        t1_playerpoints += 1
+    elif FG_S_SF_T2 > FG_S_SF_T1:
+        t2_playerpoints += 1
+    if FT_S_SF_T1 > FT_S_SF_T2:
+        t1_playerpoints += 1
+    elif FT_S_SF_T2 > FT_S_SF_T1:
+        t2_playerpoints += 1
+    if PM3_S_SF_T1 > PM3_S_SF_T2:
+        t1_playerpoints += 1
+    elif PM3_S_SF_T2 > PM3_S_SF_T1:
+        t2_playerpoints += 1
+    if AST_S_SF_T1 > AST_S_SF_T2:
+        t1_playerpoints += 1
+    elif AST_S_SF_T2 > AST_S_SF_T1:
+        t2_playerpoints += 1
+    if REB_S_SF_T1 > REB_S_SF_T2:
+        t1_playerpoints += 1
+    elif REB_S_SF_T2 > REB_S_SF_T1:
+        t2_playerpoints += 1
+    if STL_S_SF_T1 > STL_S_SF_T2:
+        t1_playerpoints += 2
+    elif STL_S_SF_T2 > STL_S_SF_T1:
+        t2_playerpoints += 2
+    if BLK_S_SF_T1 > BLK_S_SF_T2:
+        t1_playerpoints += 1
+    elif BLK_S_SF_T2 > BLK_S_SF_T1:
+        t2_playerpoints += 1
+
+    print("SF")
+    print(t1_playerpoints)
+    print(t2_playerpoints)
 
     """
         COMPARE STARTING POWER FORWARDS FOR BOTH TEAMS HERE
     """
-    print("\nComparing Starting Power Forwards: " + S_PF_T1_stats[2] + ": " + S_PF_T1_stats[1] + " vs. " + S_PF_T2_stats[2] + ": " + S_PF_T2_stats[1])
-    # compare ppg, etc.
+    print(
+        "\nComparing Starting Power Forwards: " + S_PF_T1_stats[2] + ": " + S_PF_T1_stats[1] + " vs. " + S_PF_T2_stats[
+            2] + ": " + S_PF_T2_stats[1])
+
+    # Team 1 starting PF stats
     PPG_S_PF_T1 = S_PF_T1_stats[22]
+    FG_S_PF_T1 = S_PF_T1_stats[7]
+    FT_S_PF_T1 = S_PF_T1_stats[13]
+    PM3_S_PF_T1 = S_PF_T1_stats[8]  # PM3 means 3PM cuz python doesn't like when you start a variable name with int :-)
+    AST_S_PF_T1 = S_PF_T1_stats[19]
+    REB_S_PF_T1 = S_PF_T1_stats[18]
+    STL_S_PF_T1 = S_PF_T1_stats[20]
+    BLK_S_PF_T1 = S_PF_T1_stats[21]
+
+    # Team 2 starting PF stats
     PPG_S_PF_T2 = S_PF_T2_stats[22]
+    FG_S_PF_T2 = S_PF_T2_stats[7]
+    FT_S_PF_T2 = S_PF_T2_stats[13]
+    PM3_S_PF_T2 = S_PF_T2_stats[8]  # PM3 means 3PM cuz python doesn't like when you start a variable name with int :-)
+    AST_S_PF_T2 = S_PF_T2_stats[19]
+    REB_S_PF_T2 = S_PF_T2_stats[18]
+    STL_S_PF_T2 = S_PF_T2_stats[20]
+    BLK_S_PF_T2 = S_PF_T2_stats[21]
+
+    if PPG_S_PF_T1 > PPG_S_PF_T2:
+        t1_playerpoints += 2
+    elif PPG_S_PF_T2 > PPG_S_PF_T1:
+        t2_playerpoints += 2
+    if FG_S_PF_T1 > FG_S_PF_T2:
+        t1_playerpoints += 1
+    elif FG_S_PF_T2 > FG_S_PF_T1:
+        t2_playerpoints += 1
+    if FT_S_PF_T1 > FT_S_PF_T2:
+        t1_playerpoints += 1
+    elif FT_S_PF_T2 > FT_S_PF_T1:
+        t2_playerpoints += 1
+    if PM3_S_PF_T1 > PM3_S_PF_T2:
+        t1_playerpoints += 1
+    elif PM3_S_PF_T2 > PM3_S_PF_T1:
+        t2_playerpoints += 1
+    if AST_S_PF_T1 > AST_S_PF_T2:
+        t1_playerpoints += 1
+    elif AST_S_PF_T2 > AST_S_PF_T1:
+        t2_playerpoints += 1
+    if REB_S_PF_T1 > REB_S_PF_T2:
+        t1_playerpoints += 2
+    elif REB_S_PF_T2 > REB_S_PF_T1:
+        t2_playerpoints += 2
+    if STL_S_PF_T1 > STL_S_PF_T2:
+        t1_playerpoints += 1
+    elif STL_S_PF_T2 > STL_S_PF_T1:
+        t2_playerpoints += 1
+    if BLK_S_PF_T1 > BLK_S_PF_T2:
+        t1_playerpoints += 2
+    elif BLK_S_PF_T2 > BLK_S_PF_T1:
+        t2_playerpoints += 2
+
+    print("PF")
+    print(t1_playerpoints)
+    print(t2_playerpoints)
 
     """
         COMPARE STARTING CENTERS FOR BOTH TEAMS HERE
     """
-    print("\nComparing Starting Centers: " + S_C_T1_stats[2] + ": " + S_C_T1_stats[1] + " vs. " + S_C_T2_stats[2] + ": " + S_C_T2_stats[1])
-    # compare ppg, etc.
+    print(
+        "\nComparing Starting Centers: " + S_C_T1_stats[2] + ": " + S_C_T1_stats[1] + " vs. " + S_C_T2_stats[2] + ": " +
+        S_C_T2_stats[1])
+
+    # Team 1 starting C stats
     PPG_S_C_T1 = S_C_T1_stats[22]
+    FG_S_C_T1 = S_C_T1_stats[7]
+    FT_S_C_T1 = S_C_T1_stats[13]
+    PM3_S_C_T1 = S_C_T1_stats[8]  # PM3 means 3PM cuz python doesn't like when you start a variable name with int :-)
+    AST_S_C_T1 = S_C_T1_stats[19]
+    REB_S_C_T1 = S_C_T1_stats[18]
+    STL_S_C_T1 = S_C_T1_stats[20]
+    BLK_S_C_T1 = S_C_T1_stats[21]
+
+    # Team 2 starting C stats
     PPG_S_C_T2 = S_C_T2_stats[22]
+    FG_S_C_T2 = S_C_T2_stats[7]
+    FT_S_C_T2 = S_C_T2_stats[13]
+    PM3_S_C_T2 = S_C_T2_stats[8]  # PM3 means 3PM cuz python doesn't like when you start a variable name with int :-)
+    AST_S_C_T2 = S_C_T2_stats[19]
+    REB_S_C_T2 = S_C_T2_stats[18]
+    STL_S_C_T2 = S_C_T2_stats[20]
+    BLK_S_C_T2 = S_C_T2_stats[21]
+
+    if PPG_S_C_T1 > PPG_S_C_T2:
+        t1_playerpoints += 1
+    elif PPG_S_C_T2 > PPG_S_C_T1:
+        t2_playerpoints += 1
+    if FG_S_C_T1 > FG_S_C_T2:
+        t1_playerpoints += 1
+    elif FG_S_C_T2 > FG_S_C_T1:
+        t2_playerpoints += 1
+    if FT_S_C_T1 > FT_S_C_T2:
+        t1_playerpoints += 1
+    elif FT_S_C_T2 > FT_S_C_T1:
+        t2_playerpoints += 1
+    if PM3_S_C_T1 > PM3_S_C_T2:
+        t1_playerpoints += 1
+    elif PM3_S_C_T2 > PM3_S_C_T1:
+        t2_playerpoints += 1
+    if AST_S_C_T1 > AST_S_C_T2:
+        t1_playerpoints += 1
+    elif AST_S_C_T2 > AST_S_C_T1:
+        t2_playerpoints += 1
+    if REB_S_C_T1 > REB_S_C_T2:
+        t1_playerpoints += 2    # 2
+    elif REB_S_C_T2 > REB_S_C_T1:
+        t2_playerpoints += 2    # 2
+    if STL_S_C_T1 > STL_S_C_T2:
+        t1_playerpoints += 1
+    elif STL_S_C_T2 > STL_S_C_T1:
+        t2_playerpoints += 1
+    if BLK_S_C_T1 > BLK_S_C_T2:
+        t1_playerpoints += 2
+    elif BLK_S_C_T2 > BLK_S_C_T1:
+        t2_playerpoints += 2
+
+    print("C")
+    print(t1_playerpoints)
+    print(t2_playerpoints)
 
     """
         If we want to compare one thing from bench we could average points off bench and apply that
-        
+
     """
 
+    # BEGIN MATCHUP POINTS CALCULATION
+
+    # weighted 50% for team stats (20% bench, 30% starters)
+    # weighted 50% for individual player matchups
+
+    print(": " + str(t1_b_points) + ", " + str(t1_playerpoints) + ", " + str(t1_s_points))
+    print(": " + str(t2_b_points) + ", " + str(t2_playerpoints) + ", " + str(t2_s_points))
+
+    t1_totalpoints = (((t1_b_points) + (t1_s_points)) * 0.6) + (t1_playerpoints * 0.4)  # removed adjustment for bench
+    t2_totalpoints = (((t2_b_points) + (t2_s_points)) * 0.6) + (t2_playerpoints * 0.4)  # removed adjustment for bench
 
     # output/return results with team names and rounded percentage
     # ( not like this lol but its a start )
 
     if t1_totalpoints > t2_totalpoints:
-        advantage = ((t1_totalpoints - t2_totalpoints) / 10) * 100
-        # calculate some sort of percentage advantage to beat other team
-        print("\nTeam 1 has a ", advantage, "% advantage to beat Team 2!")
+        advantage = round((((t1_totalpoints - t2_totalpoints) / 10) * 100), 2)
+        # calculate percentage advantage to beat other team
+        print("\n", S_C_T1_stats[2], " has a ", advantage, "% advantage over ", S_C_T2_stats[2], "!")
     elif t2_totalpoints > t1_totalpoints:
-        advantage = ((t2_totalpoints - t1_totalpoints) / 10) * 100
-        print("\nTeam 2 has a ", advantage, "% advantage to beat Team 1!")
+        advantage = round((((t2_totalpoints - t1_totalpoints) / 10) * 100), 2)
+        print("\n", S_C_T2_stats[2], " has a ", advantage, "% advantage over ", S_C_T1_stats[2], "!")
     elif t1_totalpoints == t2_totalpoints:
         print("\nNeither team has a distinct advantage. What a perfect matchup!")
 
