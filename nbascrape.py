@@ -5,7 +5,7 @@
 from lxml import html
 from random import randint
 import time
-import urllib.request
+#import urllib.request
 import requests
 import datetime
 
@@ -19,26 +19,27 @@ def fileTeams():
     return teams
 
 # scrapes and parses team data
-def getTeams(team1, team2):
+def getTeams(team1,team2):
     url = "https://basketball.realgm.com/nba/teams/"
     end_url = "/Stats/2018/Averages"
 
-    list = []
+    mylist = []
     f = open("urls.txt", 'r')
 
     # load teams into list
     for urls in f:
         urls = urls.strip("\n")
-        list.append(url + urls + end_url)
+        mylist.append(url + urls + end_url)
 
     print("Selected Teams (by index): \n")
     print("Comparing: " + str(team1) + " vs. " + str(team2))
-    print(list[team1])
-    print(list[team2])
+    #print(list[team1])
+    #print(list[team2])
 
     # both lists are parsed with values
-    t1 = scrapeUrl(list[team1])
-    t2 = scrapeUrl(list[team2])
+
+    t1 = scrapeUrl(mylist[int(team1)])
+    t2 = scrapeUrl(mylist[int(team2)])
 
     print("\nList Data Team 1:")
     print("Player Stats: " + str(t1[0]))
@@ -50,8 +51,7 @@ def getTeams(team1, team2):
     print("Team Stats: " + str(t2[1]))
     print("Previous Games (Splits): " + str(t2[2]))
 
-    # calling compareTeams to compare team data and determine winner
-    winner = compareTeams(team1, t1, team2, t2)
+    return team1, t1, team2, t2
 
 def parseTeamData(data, iter, max, index):
     team_stats = []
@@ -205,13 +205,21 @@ def compareTeams(team1id, data1, team2id, data2):
     print("\nTeam 1: " + str(team1id) + ", Team 2: " + str(team2id))
     # use team1id and team2id to get teams from depth charts
     depth_charts = findDepths()
-    team1_rotations = ""
-    team2_rotations = ""
+
+    team1_rotations = []
+    team2_rotations = []
+
+    # write all player data to this list
+    compareTXT = []
 
     for team_entry in depth_charts:
-        if team_entry[0] is team1id:
+        print(team_entry[0])
+        print("ITER")
+        if team_entry[0] is int(team1id):
+            print("FOUND")
             team1_rotations = team_entry
-        if team_entry[0] is team2id:
+        if team_entry[0] is int(team2id):
+            print("FOUND")
             team2_rotations = team_entry
 
     print("Team 1 Starters: " + str(team1_rotations[1]))
@@ -492,6 +500,9 @@ def compareTeams(team1id, data1, team2id, data2):
     print("\nComparing Starting Point Guards: " + S_PG_T1_stats[2] + ": " + S_PG_T1_stats[1] + " vs. " + S_PG_T2_stats[
         2] + ": " + S_PG_T2_stats[1])
 
+    compareTXT.append("Comparing Starting Point Guards: " + S_PG_T1_stats[2] + ": " + S_PG_T1_stats[1] + " vs. " + S_PG_T2_stats[
+        2] + ": " + S_PG_T2_stats[1])
+
     print()
 
     # Team 1 starting PG stats
@@ -558,6 +569,9 @@ def compareTeams(team1id, data1, team2id, data2):
         "\nComparing Starting Shooting Guards: " + S_SG_T1_stats[2] + ": " + S_SG_T1_stats[1] + " vs. " + S_SG_T2_stats[
             2] + ": " + S_SG_T2_stats[1])
 
+    compareTXT.append("Comparing Starting Shooting Guards: " + S_SG_T1_stats[2] + ": " + S_SG_T1_stats[1] + " vs. " + S_SG_T2_stats[
+            2] + ": " + S_SG_T2_stats[1])
+
     # Team 1 starting SG stats
     PPG_S_SG_T1 = S_SG_T1_stats[22]
     FG_S_SG_T1 = S_SG_T1_stats[7]
@@ -620,6 +634,10 @@ def compareTeams(team1id, data1, team2id, data2):
     """
     print(
         "\nComparing Starting Small Forwards: " + S_SF_T1_stats[2] + ": " + S_SF_T1_stats[1] + " vs. " + S_SF_T2_stats[
+            2] + ": " + S_SF_T2_stats[1])
+
+    compareTXT.append(
+        "Comparing Starting Small Forwards: " + S_SF_T1_stats[2] + ": " + S_SF_T1_stats[1] + " vs. " + S_SF_T2_stats[
             2] + ": " + S_SF_T2_stats[1])
 
     # Team 1 starting SF stats
@@ -686,6 +704,10 @@ def compareTeams(team1id, data1, team2id, data2):
         "\nComparing Starting Power Forwards: " + S_PF_T1_stats[2] + ": " + S_PF_T1_stats[1] + " vs. " + S_PF_T2_stats[
             2] + ": " + S_PF_T2_stats[1])
 
+    compareTXT.append(
+        "Comparing Starting Power Forwards: " + S_PF_T1_stats[2] + ": " + S_PF_T1_stats[1] + " vs. " + S_PF_T2_stats[
+            2] + ": " + S_PF_T2_stats[1])
+
     # Team 1 starting PF stats
     PPG_S_PF_T1 = S_PF_T1_stats[22]
     FG_S_PF_T1 = S_PF_T1_stats[7]
@@ -750,6 +772,10 @@ def compareTeams(team1id, data1, team2id, data2):
         "\nComparing Starting Centers: " + S_C_T1_stats[2] + ": " + S_C_T1_stats[1] + " vs. " + S_C_T2_stats[2] + ": " +
         S_C_T2_stats[1])
 
+    compareTXT.append(
+        "Comparing Starting Centers: " + S_C_T1_stats[2] + ": " + S_C_T1_stats[1] + " vs. " + S_C_T2_stats[2] + ": " +
+        S_C_T2_stats[1])
+
     # Team 1 starting C stats
     PPG_S_C_T1 = S_C_T1_stats[22]
     FG_S_C_T1 = S_C_T1_stats[7]
@@ -807,6 +833,9 @@ def compareTeams(team1id, data1, team2id, data2):
     print(t1_playerpoints)
     print(t2_playerpoints)
 
+    compareTXT.append(" --> Team 1 Players v. Team 2 Players Team Points: " + str(t1_playerpoints) + " vs. " + str(t2_playerpoints))
+    print(compareTXT)
+
     """
         If we want to compare one thing from bench we could average points off bench and apply that
 
@@ -819,6 +848,11 @@ def compareTeams(team1id, data1, team2id, data2):
 
     print(": " + str(t1_b_points) + ", " + str(t1_playerpoints) + ", " + str(t1_s_points))
     print(": " + str(t2_b_points) + ", " + str(t2_playerpoints) + ", " + str(t2_s_points))
+    compareTXT.append("Final Team 1 Points: " + ": AVG Bench Points--" + str(t1_b_points) + ", Player Points--" + str(t1_playerpoints) + ", AVG Starter Points" + str(t1_s_points))
+
+    compareTXT.append("Final Team 2 Points: " + ": AVG Bench Points--" + str(t2_b_points) + ", Player Points--" + str(t2_playerpoints) + ", AVG Starter Points" + str(t2_s_points))
+
+    print(compareTXT)
 
     t1_totalpoints = (((t1_b_points) + (t1_s_points)) * 0.6) + (t1_playerpoints * 0.4)  # removed adjustment for bench
     t2_totalpoints = (((t2_b_points) + (t2_s_points)) * 0.6) + (t2_playerpoints * 0.4)  # removed adjustment for bench
@@ -829,14 +863,14 @@ def compareTeams(team1id, data1, team2id, data2):
     if t1_totalpoints > t2_totalpoints:
         advantage = round((((t1_totalpoints - t2_totalpoints) / 10) * 100), 2)
         # calculate percentage advantage to beat other team
-        print("\n", S_C_T1_stats[2], " has a ", advantage, "% advantage over ", S_C_T2_stats[2], "!")
+        #print("\n", S_C_T1_stats[2], " has a ", advantage, "% advantage over ", S_C_T2_stats[2], "!")
     elif t2_totalpoints > t1_totalpoints:
         advantage = round((((t2_totalpoints - t1_totalpoints) / 10) * 100), 2)
-        print("\n", S_C_T2_stats[2], " has a ", advantage, "% advantage over ", S_C_T1_stats[2], "!")
+        #print("\n", S_C_T2_stats[2], " has a ", advantage, "% advantage over ", S_C_T1_stats[2], "!")
     elif t1_totalpoints == t2_totalpoints:
         print("\nNeither team has a distinct advantage. What a perfect matchup!")
 
-    return True
+    return S_C_T1_stats[2], str(advantage), S_C_T2_stats[2], compareTXT
 
 def findDepths():
     """
@@ -924,8 +958,7 @@ def findDepths():
     # returns
     return depth_charts
 
-if __name__ == "__main__":
-
+def RunScript(team1,team2):
     # all valid teams located in teams.txt
     # call prints all to screen for testing purposes
     teams = fileTeams()
@@ -933,13 +966,16 @@ if __name__ == "__main__":
     for index, team in enumerate(teams):
         print(str(index) + ". " + str(team))
 
-    print("\nPlease enter two teams #s to determine a winner: (testing)")
-    print("\n")
-
-    # ideally this would be done via a drop down/method on gui
-    # select via indexed teams
-    team1 = int(input("Team 1: "))
-    team2 = int(input("Team 2: "))
-
     # team1 & team2 are indexed in urls with corresponding team in urls.txt
-    getTeams(team1, team2)
+    _team1,t1,_team2,t2 = getTeams(team1, team2)
+
+    #t1 contains all team 1 player data
+    #t2 contains all team 2 player data
+
+    # calling compareTeams to compare team data and determine winner
+    winner,adv,loser,compareTXT = compareTeams(_team1, t1, _team2, t2)
+
+    print("\n", str(winner), " has a ", str(adv), "% advantage over ", str(loser), "!\n")
+
+    return t1,t2,compareTXT,winner,adv,loser
+
