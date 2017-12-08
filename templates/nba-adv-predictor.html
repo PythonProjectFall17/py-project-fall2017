@@ -1,20 +1,54 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="en">
   <head>
-    <title>NBA Game Advantage Predictor</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="static/bootstrap.min.css" rel="stylesheet" media="screen">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="../../../../favicon.ico">
+
+    <title>NBA Predictor</title>
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+
+    <!-- Custom styles for this template -->
+    <link href="./css/starter-template.css" rel="stylesheet">
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/css/bootstrap-select.min.css">
   </head>
-  <style>
+  <!-- <style>
   body {
     background-image: url("static/NBA.jpg");
     background-repeat: no-repeat;
     background-size: cover;
   }
-  </style>
-
+</style>-->
+  <nav class="navbar navbar-expand-lg navbar bg-light">
     <div class="container">
-      <h1 style="color:white;" align="center">NBA Game Predictor</h1>
+      <a class="navbar-brand" href="nba-adv-predictor" style="color: #000;">Home</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExample07" aria-controls="navbarsExample07" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarsExample07">
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item active">
+            <a class="nav-link" href="#" style="color: #000;">About<span class="sr-only">(current)</span></a>
+          </li>
+        </ul>
+        <form class="form-inline my-2 my-md-0">
+          <input class="form-control" type="text" placeholder="Search" aria-label="Search">
+        </form>
+      </div>
+    </div>
+  </nav>
+
+  <main role="main" class="container">
+    <div class="starter-template">
+      <div style="margin-top: 35px;">
+      <h1 align="center">NBA Game Predictor</h1>
+      </div>
       <br>
 
 <p align="center">
@@ -25,25 +59,37 @@
         {{ message }}
       {% endfor %}
 
-    <p align="center" style="color:black;">
-    	<b>Select two teams to generate a prediciton:</b>
-    </p>
+    	<div align="center"><h5>Select two teams to generate a prediciton:</h5></div>
 
     <p align="center" style="color:black;">
-        {% for i in players %} 
+        {% for i in players %}
           	{{ i }}
         {% endfor %}
      </p>
 
-      <form align="center"action="" method="post" id="predict">
-        Enter Team 1 ID:<br> <input type="text" placeholder="Team ID 1" name="team1_vs" value="{{request.form.team1_vs}}"><br><br>
-        Enter Team 2 ID:<br> <input type="text" placeholder="Team ID 2" name="team2_vs" value="{{request.form.team2_vs}}"><br><br>
-    
-      <p> <b>Results: </b></p>
+      <form align="center" action="" method="POST" id="predict" class="form-inline justify-content-center">
+        <select name="team1_vs" class="form-control" style="margin-right: 2%">
+          {% for team in teams %}
+          <option value={{ loop.index - 1 }}>{{ team }}</option>
+          {% endfor %}
+        </select>
+        <select name="team2_vs" class="form-control" style="margin-right: 2%">
+          {% for team in teams %}
+          <option value={{ loop.index - 1 }}>{{ team }}</option>
+          {% endfor %}
+        </select>
+        <!-- Enter Team 1 ID:<br> <input type="text" placeholder="Team ID 1" name="team1_vs" value="{{request.form.team1_vs}}"><br><br> -->
+        <!-- Enter Team 2 ID:<br> <input type="text" placeholder="Team ID 2" name="team2_vs" value="{{request.form.team2_vs}}"><br><br> -->
+        <button class="btn btn-failure" type="submit" form="predict" value="Predict">Get Advantage</button>
+      </form>
+
+      <hr>
+
+      <div><h5>Results:</h5></div>
       <!--<ul style="list-style: none;">-->
       <p style="color:black;">
       {% set count = 0 %}
-        {% for i in some_output %} 
+        {% for i in some_output %}
           	<strong>{{ i }}</strong>
           {% set count = count+1 %}
           {% if count > 5 %}
@@ -53,30 +99,26 @@
         {% endfor %}
      </p>
       <!--</ul>-->
-
-      <p style="color:white;">
-      {% set count = 0 %}
-        {% for i in win_team %} 
-            <strong>{{ i }}</strong>
-        {% endfor %}
-     </p>
-
-      <p style="color:white;">
-      {% set count = 0 %}
-        {% for i in pct_adv %} 
-            <strong>{{ i }}</strong>
-        {% endfor %}
-     </p>
-
-      <p style="color:white;">
-      {% set count = 0 %}
-        {% for i in lose_team %} 
-            <strong>{{ i }}</strong>
-        {% endfor %}
-     </p>
-
-       	<button type="submit" form="predict" value="Predict">Get Advantage</button>
-      </form>
+      <!-- Three columns of text below the carousel -->
+      <div class="row">
+        <div class="col-lg-4">
+          {% if win_team %}
+          <img class="img-fluid" src="static/{{ win_team }}.png">
+          <h2 align="center">{{ win_team }}</h2>
+          {% endif %}
+        </div><!-- /.col-lg-4 -->
+        <div class="col-lg-4">
+          {% if pct_adv %}
+          <h2 align="center" style="margin-left: .5rem; margin-right: .5rem; margin-top:7rem;">{{ win_team }} Has a {{ pct_adv }}% advantage over</h2>
+          {% endif %}
+        </div><!-- /.col-lg-4 -->
+        <div class="col-lg-4">
+          {% if lose_team %}
+          <img class="img-fluid" src="static/{{ lose_team }}.png">
+          <h2 align="center">{{ lose_team }}</h2>
+          {% endif %}
+        </div><!-- /.col-lg-4 -->
+      </div><!-- /.row -->
 
       {% if error %}
         <p class="error"><strong>Error:</strong> {{ error }}
@@ -84,9 +126,9 @@
 
       <br>
 
-    <p align="center" style="color:white;">
+    <p align="center" style="color:black;">
 
-        {% for i in team_comparison %} 
+        {% for i in team_comparison %}
           	{{ i }} <br>
         {% endfor %}
      </p>
@@ -94,5 +136,16 @@
      <br><br>
 
     </div>
+  </main>
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/js/bootstrap-select.min.js"></script>
+    <!-- (Optional) Latest compiled and minified JavaScript translation files -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/js/i18n/defaults-*.min.js"></script>
   </body>
 </html>

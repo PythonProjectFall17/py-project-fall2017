@@ -542,9 +542,9 @@ def compareTeams(team1id, data1, team2id, data2):
     elif PM3_S_PG_T2 > PM3_S_PG_T1:
         t2_playerpoints += 2
     if AST_S_PG_T1 > AST_S_PG_T2:
-        t1_playerpoints += 2    # 3
+        t1_playerpoints += 3    # 3
     elif AST_S_PG_T2 > AST_S_PG_T1:
-        t2_playerpoints += 2    # 3
+        t2_playerpoints += 3    # 3
     if REB_S_PG_T1 > REB_S_PG_T2:
         t1_playerpoints += 1
     elif REB_S_PG_T2 > REB_S_PG_T1:
@@ -593,9 +593,9 @@ def compareTeams(team1id, data1, team2id, data2):
     BLK_S_SG_T2 = S_SG_T2_stats[21]
 
     if PPG_S_SG_T1 > PPG_S_SG_T2:
-        t1_playerpoints += 2    # 3
+        t1_playerpoints += 3    # 3
     elif PPG_S_SG_T2 > PPG_S_SG_T1:
-        t2_playerpoints += 2    # 3
+        t2_playerpoints += 3    # 3
     if FG_S_SG_T1 > FG_S_SG_T2:
         t1_playerpoints += 1
     elif FG_S_SG_T2 > FG_S_SG_T1:
@@ -661,9 +661,9 @@ def compareTeams(team1id, data1, team2id, data2):
     BLK_S_SF_T2 = S_SF_T2_stats[21]
 
     if PPG_S_SF_T1 > PPG_S_SF_T2:
-        t1_playerpoints += 2    # changed 2
+        t1_playerpoints += 3    # changed 2
     elif PPG_S_SF_T2 > PPG_S_SF_T1:
-        t2_playerpoints += 2    # changed 2
+        t2_playerpoints += 3    # changed 2
     if FG_S_SF_T1 > FG_S_SF_T2:
         t1_playerpoints += 1
     elif FG_S_SF_T2 > FG_S_SF_T1:
@@ -817,9 +817,9 @@ def compareTeams(team1id, data1, team2id, data2):
     elif AST_S_C_T2 > AST_S_C_T1:
         t2_playerpoints += 1
     if REB_S_C_T1 > REB_S_C_T2:
-        t1_playerpoints += 2    # 2
+        t1_playerpoints += 3    # 2
     elif REB_S_C_T2 > REB_S_C_T1:
-        t2_playerpoints += 2    # 2
+        t2_playerpoints += 3    # 2
     if STL_S_C_T1 > STL_S_C_T2:
         t1_playerpoints += 1
     elif STL_S_C_T2 > STL_S_C_T1:
@@ -858,19 +858,27 @@ def compareTeams(team1id, data1, team2id, data2):
     t2_totalpoints = (((t2_b_points) + (t2_s_points)) * 0.6) + (t2_playerpoints * 0.4)  # removed adjustment for bench
 
     # output/return results with team names and rounded percentage
-    # ( not like this lol but its a start )
+    # fixed for flask integration
+    winner = ""
 
     if t1_totalpoints > t2_totalpoints:
         advantage = round((((t1_totalpoints - t2_totalpoints) / 10) * 100), 2)
         # calculate percentage advantage to beat other team
-        #print("\n", S_C_T1_stats[2], " has a ", advantage, "% advantage over ", S_C_T2_stats[2], "!")
+        print("\n", S_C_T1_stats[2], " has a ", advantage, "% advantage over ", S_C_T2_stats[2], "!")
+        winner = S_C_T1_stats[2]
+        loser = S_C_T2_stats[2]
     elif t2_totalpoints > t1_totalpoints:
         advantage = round((((t2_totalpoints - t1_totalpoints) / 10) * 100), 2)
-        #print("\n", S_C_T2_stats[2], " has a ", advantage, "% advantage over ", S_C_T1_stats[2], "!")
+        print("\n", S_C_T2_stats[2], " has a ", advantage, "% advantage over ", S_C_T1_stats[2], "!")
+        winner = S_C_T2_stats[2]
+        loser = S_C_T1_stats[2]
     elif t1_totalpoints == t2_totalpoints:
+        winner = S_C_T1_stats[2]
+        loser = S_C_T2_stats[2]
+        advantage = 0
         print("\nNeither team has a distinct advantage. What a perfect matchup!")
 
-    return S_C_T1_stats[2], str(advantage), S_C_T2_stats[2], compareTXT
+    return winner, str(advantage), loser, compareTXT
 
 def findDepths():
     """
@@ -978,4 +986,3 @@ def RunScript(team1,team2):
     print("\n", str(winner), " has a ", str(adv), "% advantage over ", str(loser), "!\n")
 
     return t1,t2,compareTXT,winner,adv,loser
-
